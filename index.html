@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A’LAIN Profektus AI Assistant</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.5.1",
+    "pako": "https://esm.sh/pako@2.1.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="app-container">
+        <aside id="sidebar">
+            <div id="sidebar-header">
+                <button id="new-chat-btn" aria-label="Nuevo Chat">
+                    <i class="fas fa-plus"></i> Nuevo Chat
+                </button>
+            </div>
+            <div id="chat-search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="chat-search" placeholder="Buscar en chats...">
+            </div>
+            <ul id="chat-history-list">
+                <!-- Chat history items will be populated here -->
+            </ul>
+            <button id="sidebar-toggle" aria-label="Alternar barra lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </aside>
+
+        <main id="main-content">
+            <header id="main-header">
+                <div id="header-top-row">
+                    <h1 id="app-main-title-header">A’LAIN Profektus AI Assistant</h1>
+                    <img id="app-logo-header" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iMC4yIiB5PSIwLjIiIHdpZHRoPSIxNS42IiBoZWlnaHQ9IjE1LjYiIHJ4PSIxIiByeT0iMSIgZmlsbD0iIzIxNzc1RSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxLjIiLz48Y2lyY2xlIGN4PSI0IiBjeT0iNCIgcj0iMi40IiBmaWxsPSIjMjE3NzVFIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuMCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMi40IiBmaWxsPSIjMjE3NzVFIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuMCIvPjxjaXJjbGUgY3g9IjQiIGN5PSIxMiIgcj0iMi40IiBmaWxsPSIjMjE3NzVFIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuMCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjIuNCIgZmlsbD0iIzIxNzc1RSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxLjAiLz48L3N2Zz4=" alt="Profektus Logo">
+                </div>
+                <div id="header-actions-container">
+                    <button id="file-actions-btn" class="header-action-btn" aria-label="Compartir">
+                        <i class="fas fa-ellipsis-v"></i> Compartir
+                    </button>
+                    <div id="file-popover" class="file-popover">
+                        <button id="popover-export-btn" class="popover-item" aria-label="Exportar Chat Actual (.aic)" disabled>
+                            <i class="fas fa-file-export"></i> Exportar Chat Actual (.aic)
+                        </button>
+                        <button id="popover-import-btn" class="popover-item" aria-label="Importar Proyecto (.aic)">
+                            <i class="fas fa-file-import"></i> Importar Proyecto (.aic)
+                        </button>
+                    </div>
+                </div>
+                <div id="function-buttons-container">
+                    <!-- Function buttons will be populated here -->
+                </div>
+                <span id="active-chat-session-title"></span>
+            </header>
+            <div id="chat-messages">
+                <!-- Chat messages will be displayed here -->
+            </div>
+            <div id="chat-input-container">
+                <textarea id="chat-input" placeholder="Escribe tu mensaje o usa una función..." aria-label="Entrada de mensaje"></textarea>
+                <button id="send-btn" aria-label="Enviar mensaje">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <div id="new-chat-modal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="new-chat-modal-title">
+        <div class="modal-content">
+            <button class="close-modal-btn" aria-label="Cerrar modal creación de chat">&times;</button>
+            <h2 id="new-chat-modal-title">Nuevo Chat</h2>
+            <label for="client-name-input">Nombre del Cliente:</label>
+            <input type="text" id="client-name-input" placeholder="Ej: Nestlé">
+            <label for="topic-input">Tema Central:</label>
+            <input type="text" id="topic-input" placeholder="Ej: Clima Laboral">
+            <button id="create-chat-confirm-btn">Crear Chat</button>
+        </div>
+    </div>
+
+    <div id="delete-chat-confirm-modal" class="modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="delete-chat-modal-title">
+        <div class="modal-content">
+            <button class="close-modal-btn" aria-label="Cerrar modal confirmación de borrado">&times;</button>
+            <h2 id="delete-chat-modal-title">Confirmar Borrado</h2>
+            <p>¿Estás seguro de que quieres borrar el chat "<span id="chat-to-delete-title"></span>"?</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-chat-btn" class="danger-btn">Sí, borrar</button>
+                <button id="cancel-delete-chat-btn" class="secondary-btn">No, cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="import-file-input" accept=".aic" style="display: none;" aria-label="Seleccionar archivo .aic para importar (oculto)">
+
+    <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
